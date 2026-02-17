@@ -43,10 +43,10 @@ def make_object_dataset(example_dir):
 
 def get_poses(dataset):
     poses = []
-    model_name = "megapose-1.0-RGBD"
+    model_name = "megapose-1.0-RGB-multi-hypothesis-icp"
     model_info = NAMED_MODELS[model_name]
     rigid_object_dataset = RigidObjectDataset(
-        [RigidObject(label=dataset.model_name, mesh_path=dataset.model_path, mesh_units="mm")]
+        [RigidObject(label=dataset.model_name, mesh_path=dataset.model_path)]
     )
     pose_estimator = load_named_model(model_name, rigid_object_dataset).cuda()
     for sample in tqdm(dataset):
@@ -70,7 +70,7 @@ def get_poses(dataset):
 
 
 if __name__ == "__main__":
-    data_path = "/home/ngoncharov/cvpr2026/megapose6d/datasets/ycbv_lf/bleach_hard_00_03_chaitanya"
+    data_path = "/home/ngoncharov/cvpr2026/megapose6d/datasets/ycbv_lf/bleach0"
     dataset = YCBV_LF(data_path)
     results_path = "results_megapose6d/" + data_path.split("/")[-2]
     print(results_path)

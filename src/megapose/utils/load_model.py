@@ -39,8 +39,8 @@ NAMED_MODELS = {
         "requires_depth": True,
         "depth_refiner": "ICP",
         "inference_parameters": {
-            "n_refiner_iterations": 5,
-            "n_pose_hypotheses": 5,
+            "n_refiner_iterations": 10,
+            "n_pose_hypotheses": 10,
             "run_depth_refiner": True,
         },
     },

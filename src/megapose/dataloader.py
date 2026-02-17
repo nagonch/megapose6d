@@ -283,11 +283,11 @@ if __name__ == "__main__":
         [ObjectData(label=dataset.model_name, bbox_modal=bounding_box)]
     ).cuda()
 
-    model_name = "megapose-1.0-RGBD"
+    model_name = "megapose-1.0-RGB-multi-hypothesis-icp"
     model_info = NAMED_MODELS[model_name]
 
     rigid_object_dataset = RigidObjectDataset(
-        [RigidObject(label=dataset.model_name, mesh_path=dataset.model_path, mesh_units="mm")]
+        [RigidObject(label=dataset.model_name, mesh_path=dataset.model_path)]
     )
     pose_estimator = load_named_model(model_name, rigid_object_dataset).cuda()
     # print(observation)
