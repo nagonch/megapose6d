@@ -14,8 +14,6 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-
-
 # Standard Library
 from copy import deepcopy
 from typing import List
@@ -71,6 +69,8 @@ class MeshDataBase:
             )
             for l, obj in self.obj_dict.items()
         }
+        for key, value in self.meshes.items():
+            self.meshes[key] = value.apply_translation(value.centroid)
 
         for label, obj in self.obj_dict.items():
             if obj.diameter_meters is None:

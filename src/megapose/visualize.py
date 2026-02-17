@@ -141,7 +141,7 @@ if __name__ == "__main__":
         points_camera = points_camera[mask.reshape(-1)]
         points_camera_np = points_camera
         visulizer.add_point_cloud(
-            name=f"pointcloud_{i}", points=points_camera_np, colors=color, point_size=1e-4
+            name=f"pointcloud_{i}", points=points_camera_np, colors=color, point_size=1e-3
         )
         visulizer.add_frame(
             name=f"frame_{i}",
