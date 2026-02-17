@@ -143,7 +143,6 @@ def run_inference(
     output, _ = pose_estimator.run_inference_pipeline(
         observation, detections=detections, **model_info["inference_parameters"]
     )
-
     save_predictions(example_dir, output)
     return
 
@@ -210,7 +209,7 @@ if __name__ == "__main__":
     set_logging_level("info")
     parser = argparse.ArgumentParser()
     parser.add_argument("example_name")
-    parser.add_argument("--model", type=str, default="megapose-1.0-RGB-multi-hypothesis")
+    parser.add_argument("--model", type=str, default="megapose-1.0-RGBD")
     parser.add_argument("--vis-detections", action="store_true")
     parser.add_argument("--run-inference", action="store_true")
     parser.add_argument("--vis-outputs", action="store_true")

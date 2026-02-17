@@ -247,8 +247,61 @@ class LIFT:
 
 
 if __name__ == "__main__":
-    dataset = LIFT("/home/ngoncharov/cvpr2026/megapose6d/datasets/LiFT_dataset/box_motion_prod")
+    from megapose.config import LOCAL_DATA_DIR
+    from megapose.datasets.object_dataset import RigidObject, RigidObjectDataset
+    from megapose.datasets.scene_dataset import CameraData, ObjectData
+    from megapose.inference.types import (
+        DetectionsType,
+        ObservationTensor,
+        PoseEstimatesType,
+    )
+    from megapose.inference.utils import make_detections_from_object_data
+    from megapose.lib3d.transform import Transform
+    from megapose.panda3d_renderer import Panda3dLightData
+    from megapose.panda3d_renderer.panda3d_scene_renderer import Panda3dSceneRenderer
+    from megapose.utils.conversion import convert_scene_observation_to_panda3d
+    from megapose.utils.load_model import NAMED_MODELS, load_named_model
+    from megapose.utils.logging import get_logger, set_logging_level
+    from megapose.visualization.bokeh_plotter import BokehPlotter
+    from megapose.visualization.utils import make_contour_overlay
+
+    dataset = YCBV_LF(
+        "/home/ngoncharov/cvpr2026/megapose6d/datasets/ycbv_lf/bleach_hard_00_03_chaitanya"
+    )
     sample = dataset[0]
-    for key, value in sample.items():
-        print(key)
-        print(value)
+    rgb = sample["rgb"]
+    depth = sample["depth"]
+    bounding_box = bounding_box_from_mask(sample["mask"])
+    # from matplotlib import pyplot as plt
+
+    # plt.imshow(rgb)
+    # plt.scatter([bounding_box[0], bounding_box[2]], [bounding_box[1], bounding_box[3]], color="red")
+    # plt.savefig("test.png")
+    # raise
+    observation = ObservationTensor.from_numpy(rgb, depth, dataset.camera_intrinsics).cuda()
+    detections = make_detections_from_object_data(
+        [ObjectData(label=dataset.model_name, bbox_modal=bounding_box)]
+    ).cuda()
+
+    model_name = "megapose-1.0-RGBD"
+    model_info = NAMED_MODELS[model_name]
+
+    rigid_object_dataset = RigidObjectDataset(
+        [RigidObject(label=dataset.model_name, mesh_path=dataset.model_path, mesh_units="mm")]
+    )
+    pose_estimator = load_named_model(model_name, rigid_object_dataset).cuda()
+    # print(observation)
+    # print(detections)
+    # print(model_info["inference_parameters"])
+    # raise
+    output, _ = pose_estimator.run_inference_pipeline(
+        observation,
+        detections=detections,
+        **model_info["inference_parameters"],
+        cuda_timer=True,
+    )
+    poses = output.poses.cpu().numpy()
+    print(poses)
+
+    # for key, value in sample.items():
+    #     print(key)

@@ -14,8 +14,6 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-
-
 # Standard Library
 from dataclasses import dataclass
 from typing import List, Optional
@@ -36,8 +34,8 @@ class ContinuousSymmetry:
     See https://github.com/thodan/bop_toolkit/blob/master/bop_toolkit_lib/misc.py
     """
 
-    offset: npt.NDArray[np.float_]
-    axis: npt.NDArray[np.float_]
+    offset: npt.NDArray[np.float64]
+    axis: npt.NDArray[np.float64]
 
 
 @dataclass
@@ -46,7 +44,7 @@ class DiscreteSymmetry:
     pose: (4, 4) homogeneous matrix
     """
 
-    pose: npt.NDArray[np.float_]
+    pose: npt.NDArray[np.float64]
 
 
 def make_symmetries_poses(

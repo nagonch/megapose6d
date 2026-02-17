@@ -1,69 +1,90 @@
 name: megapose
+
 channels:
-   - conda-forge
-   - pytorch
-   - anaconda
-   - defaults
+  - conda-forge
+  - pytorch
+  - defaults
+
 dependencies:
+  # Core
   - python=3.9
   - pip
   - wget
-  - python-wget
   - joblib
-  - pytorch==1.11.0
-  - torchvision==0.12.0
-  - cudatoolkit==11.3.1
+
+  # PyTorch + CUDA
+  - pytorch=1.11.0
+  - torchvision=0.12.0
+  - cudatoolkit=11.3
+
+  # Jupyter (PINNED for nbextensions compatibility)
+  - notebook<7
+  - jupyterlab<4
   - ipython
   - ipykernel
-  - jupyterlab
-  - notebook
   - nb_conda_kernels
-  - jupyter_contrib_nbextensions
-  - pinocchio
-  - rclone
+
+#   # Extensions (legacy)
+#   - jupyter_contrib_nbextensions
+#   - jupyter_nbextensions_configurator
+
+  # Utils
   - pillow
   - ipywidgets
+  - pinocchio
+  - rclone
+
+  # Browser automation
   - selenium
   - geckodriver
   - firefox
+
   - pip:
-      - meshcat
-      - selenium
-      - omegaconf
-      - simplejson
-      - line_profiler 
-      - opencv-python
-      - torchnet
-      - tqdm
-      - lxml
-      - transforms3d
-      - panda3d
-      - joblib
-      - xarray 
-      - pandas
-      - matplotlib
-      - bokeh
-      - plyfile 
-      - trimesh 
-      - ipdb 
-      - panda3d-gltf
-      - colorama
-      - pyyaml
-      - ipykernel
+      # Core scientific
+      - numpy
       - scipy
-      - pypng
-      - h5py 
+      - pandas
+      - xarray
+      - matplotlib
       - seaborn
-      - kornia 
-      - pyarrow 
-      - dt_apriltags 
+      - bokeh
+      - tqdm
+      - h5py
+      - pyarrow
+
+      # Vision / geometry
+      - opencv-python
+      - opencv-contrib-python
       - open3d
-      - structlog
-      - imageio
-      - progressbar
-      - pyyaml
-      - psutil
-      - webdataset
-      - opencv-contrib-python 
-      - roma 
+      - trimesh
+      - plyfile
+      - kornia
+      - transforms3d
+      - roma
       - torchgeometry
+      - dt-apriltags
+
+      # Graphics / 3D
+      - panda3d
+      - panda3d-gltf
+      - meshcat
+
+      # Data / IO
+      - webdataset
+      - imageio
+      - pypng
+      - lxml
+      - simplejson
+      - pyyaml
+
+      # Dev / Debug
+      - ipdb
+      - line-profiler
+      - psutil
+      - structlog
+      - progressbar
+      - colorama
+
+      # Misc
+      - omegaconf
+      - torchnet

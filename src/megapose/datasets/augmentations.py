@@ -14,8 +14,6 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-
-
 # Standard Library
 import dataclasses
 import random
@@ -478,7 +476,7 @@ class CropResizeToAspectTransform(SceneObservationTransform):
         new_obs.rgb = np.array(rgb_pil, dtype=np.uint8)
         new_obs.segmentation = np.array(segmentation_pil, dtype=np.int32)
         if depth_pil is not None:
-            new_obs.depth = np.array(depth_pil, dtype=np.float_)
+            new_obs.depth = np.array(depth_pil, dtype=np.float64)
 
         # Update modal object bounding boxes
         dets_gt = make_detections_from_segmentation(new_obs.segmentation[None])[0]
