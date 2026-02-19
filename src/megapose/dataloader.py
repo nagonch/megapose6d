@@ -81,7 +81,11 @@ sequence_to_model_lift = {seq: model for seq, model in zip(sequence_names_lift, 
 
 
 class EOAT:
-    def __init__(self, data_path):
+    def __init__(
+        self,
+        data_path,
+        ycbv_LF_path="/home/ngoncharov/cvpr2026/SAM-6D/SAM-6D/datasets/ycbv_lf",
+    ):
         assert os.path.exists(data_path), f"Data path {data_path} does not exist."
         self.data_path = data_path
         self.sequence_name = data_path.split("/")[-1]
@@ -93,6 +97,14 @@ class EOAT:
             "textured.obj",
         )
         self.gt_mesh = trimesh.load(self.model_path)
+        self.ycbv_LF_path = ycbv_LF_path
+        self.relevant_frames = [
+            int(item.strip("LF_"))
+            for item in list(
+                sorted(os.listdir(os.path.join(self.ycbv_LF_path, self.sequence_name)))
+            )
+            if "LF_" in item
+        ]
 
         self.camera_intrinsics = np.loadtxt(os.path.join(self.data_path, "cam_K.txt"))
         self.rgb_path = os.path.join(self.data_path, "rgb")
@@ -112,6 +124,10 @@ class EOAT:
         self.mask_frames = [
             os.path.join(self.masks_path, f) for f in sorted(os.listdir(self.masks_path))
         ]
+        self.rgb_frames = [self.rgb_frames[i] for i in self.relevant_frames]
+        self.depth_frames = [self.depth_frames[i] for i in self.relevant_frames]
+        self.pose_frames = [self.pose_frames[i] for i in self.relevant_frames]
+        self.mask_frames = [self.mask_frames[i] for i in self.relevant_frames]
 
     def __len__(self):
         return len(self.rgb_frames)
@@ -195,10 +211,11 @@ class LIFT:
         self.data_path = data_path
         self.sequence_name = data_path.split("/")[-1]
         self.models_path = models_path
+        self.model_name = sequence_to_model_lift[self.sequence_name]
         if self.models_path is not None:
             self.model_path = os.path.join(
                 self.models_path,
-                sequence_to_model_lift[self.sequence_name],
+                self.model_name,
                 "model.obj",
             )
             self.gt_mesh = trimesh.load(self.model_path)

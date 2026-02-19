@@ -7,15 +7,15 @@ from megapose.inference.types import (
 import numpy as np
 from megapose.inference.utils import make_detections_from_object_data
 from megapose.utils.load_model import NAMED_MODELS, load_named_model
-from dataloader import YCBV_LF
+from dataloader import YCBV_LF, EOAT, LIFT
 from tqdm import tqdm
 import os
 
 
 def bounding_box_from_mask(binary_mask: np.ndarray):
     object_rows, object_cols = np.where(binary_mask)
-    if object_rows.size == 0:
-        return None
+    # if object_rows.size == 0:
+    #     return None
     ymin = object_rows.min()
     ymax = object_rows.max() + 1
     xmin = object_cols.min()
@@ -49,9 +49,13 @@ def get_poses(dataset):
         [RigidObject(label=dataset.model_name, mesh_path=dataset.model_path)]
     )
     pose_estimator = load_named_model(model_name, rigid_object_dataset).cuda()
-    for sample in tqdm(dataset):
+    for i, sample in enumerate(dataset):
         rgb = sample["rgb"]
         depth = sample["depth"]
+        if sample["mask"].sum() == 0:
+            poses.append(pose)
+            continue
+        # print(i, sample["mask"].sum())
         bounding_box = bounding_box_from_mask(sample["mask"])
         observation = ObservationTensor.from_numpy(rgb, depth, dataset.camera_intrinsics).cuda()
         detections = make_detections_from_object_data(
@@ -70,11 +74,28 @@ def get_poses(dataset):
 
 
 if __name__ == "__main__":
-    data_path = "/home/ngoncharov/cvpr2026/megapose6d/datasets/ycbv_lf/bleach0"
-    dataset = YCBV_LF(data_path)
-    results_path = "results_megapose6d/" + data_path.split("/")[-2]
-    print(results_path)
-    os.makedirs(results_path, exist_ok=True)
-    poses = get_poses(dataset)
-    print(poses)
-    np.save(f"{results_path}/{data_path.split('/')[-1]}.npy", poses)
+    dataset_path = "/home/ngoncharov/cvpr2026/megapose6d/datasets/ycb_in_eoat"
+    for sequence_name in os.listdir(dataset_path):
+        if sequence_name in [
+            "models",
+            "ref_views",
+            "download_ycbv.sh",
+            "prod_ref",
+            "get_sequence.sh",
+        ]:
+            continue
+        print("Infering on sequence:", sequence_name)
+        data_path = f"{dataset_path}/{sequence_name}"
+        dataset = EOAT(
+            data_path  # , models_path="/home/ngoncharov/cvpr2026/FoundationPose/bundlesdf/output_lift"
+        )
+        results_path = "results_megapose6d/" + data_path.split("/")[-2]
+        if os.path.exists(f"{results_path}/{data_path.split('/')[-1]}.npy"):
+            print(f"Poses for {sequence_name} already exist, skipping...")
+            continue
+        os.makedirs(results_path, exist_ok=True)
+        try:
+            poses = get_poses(dataset)
+            np.save(f"{results_path}/{data_path.split('/')[-1]}.npy", poses)
+        except Exception as e:
+            print(f"Error processing {sequence_name}: {e}")

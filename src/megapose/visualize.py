@@ -124,8 +124,12 @@ class Visualizer:
 
 
 if __name__ == "__main__":
-    dataset = YCBV_LF("/home/ngoncharov/cvpr2026/megapose6d/datasets/ycbv_lf/bleach0")
-    poses = np.load("/home/ngoncharov/cvpr2026/megapose6d/results_megapose6d/ycbv_lf/bleach0.npy")
+    dataset = YCBV_LF(
+        "/home/ngoncharov/cvpr2026/megapose6d/datasets/ycbv_lf/bleach_hard_00_03_chaitanya"
+    )
+    poses = np.load(
+        "/home/ngoncharov/cvpr2026/SAM-6D/SAM-6D/Pose_Estimation_Model/results_sam6d/ycbv_lf/bleach_hard_00_03_chaitanya.npy"
+    )
     visulizer = Visualizer()
     for i in np.linspace(0, len(dataset) - 1, 10).astype(int):
         sample = dataset[i]
