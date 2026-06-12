@@ -49,7 +49,7 @@ def get_poses(dataset):
         [RigidObject(label=dataset.model_name, mesh_path=dataset.model_path)]
     )
     pose_estimator = load_named_model(model_name, rigid_object_dataset).cuda()
-    for i, sample in enumerate(dataset):
+    for i, sample in tqdm(enumerate(dataset)):
         rgb = sample["rgb"]
         depth = sample["depth"]
         if sample["mask"].sum() == 0:
@@ -74,19 +74,11 @@ def get_poses(dataset):
 
 
 if __name__ == "__main__":
-    dataset_path = "/home/ngoncharov/cvpr2026/megapose6d/datasets/ycb_in_eoat"
+    dataset_path = "/home/ngoncharov/SpecTrack_dataset/cube_0.0"
     for sequence_name in os.listdir(dataset_path):
-        if sequence_name in [
-            "models",
-            "ref_views",
-            "download_ycbv.sh",
-            "prod_ref",
-            "get_sequence.sh",
-        ]:
-            continue
         print("Infering on sequence:", sequence_name)
         data_path = f"{dataset_path}/{sequence_name}"
-        dataset = EOAT(
+        dataset = YCBV_LF(
             data_path  # , models_path="/home/ngoncharov/cvpr2026/FoundationPose/bundlesdf/output_lift"
         )
         results_path = "results_megapose6d/" + data_path.split("/")[-2]

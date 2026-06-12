@@ -150,17 +150,21 @@ class YCBV_LF:
     def __init__(self, data_path):
         assert os.path.exists(data_path), f"Data path {data_path} does not exist."
         self.data_path = data_path
-        self.sequence_name = data_path.split("/")[-1]
-        self.model_name = sequence_to_model.get(self.sequence_name, None)
-        self.model_path = os.path.join(
-            "/".join(data_path.split("/")[:-1]),
-            "models",
-            self.model_name,
-            "textured.obj",
+        self.sequence_name = os.path.basename(data_path)
+        self.dataset_root = os.path.dirname(os.path.dirname(data_path))
+
+        mesh_names = [
+            m for m in os.listdir(os.path.join(self.dataset_root, "object_meshes"))
+            if os.path.isdir(os.path.join(self.dataset_root, "object_meshes", m))
+        ]
+        self.model_name = max(
+            mesh_names,
+            key=lambda m: len(os.path.commonprefix([self.sequence_name, m])),
         )
-        self.gt_mesh = trimesh.load(self.model_path)
-        self.model_name = sequence_to_model[self.sequence_name]
-        self.gt_mesh = trimesh.load(self.model_path)
+
+        self.mesh_dir = os.path.join(self.dataset_root, "object_meshes", self.model_name)
+        self.model_path = os.path.join(self.mesh_dir, "textured_simple.obj")
+        self.gt_mesh = trimesh.load(self.model_path, force="mesh")
 
         self.camera_poses_paths = [
             os.path.join(self.data_path, "camera_poses", item)
