@@ -74,7 +74,13 @@ def get_poses(dataset):
 
 
 if __name__ == "__main__":
-    dataset_path = "/home/ngoncharov/SpecTrack_dataset/cube_0.0"
+    import argparse
+
+    parser = argparse.ArgumentParser()
+    parser.add_argument("alpha", type=str, choices=["0.0", "0.5", "0.7", "1.0"])
+    args = parser.parse_args()
+
+    dataset_path = f"/home/ngoncharov/SpecTrack_dataset/cube_{args.alpha}"
     for sequence_name in os.listdir(dataset_path):
         print("Infering on sequence:", sequence_name)
         data_path = f"{dataset_path}/{sequence_name}"
